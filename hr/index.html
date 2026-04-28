@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>KIM Careers — HR Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--black:#0a0a0a;--dark:#111318;--card:#161a22;--blue:#2d7de8;--blue-light:#5b9ef5;--green:#1ec97e;--gray:#8a8f9a;--gray-light:#c4c8d0;--white:#f4f6f9;--border:rgba(255,255,255,0.07);--border-mid:rgba(255,255,255,0.12)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:var(--black);color:var(--white);min-height:100vh}
+nav{position:sticky;top:0;z-index:100;padding:14px 40px;display:flex;align-items:center;justify-content:space-between;background:rgba(10,10,10,0.95);backdrop-filter:blur(16px);border-bottom:1px solid var(--border)}
+.nav-left{display:flex;align-items:center;gap:12px}
+.nav-title{font-family:'Plus Jakarta Sans',sans-serif;font-size:13px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--gray)}
+.badge-hr{background:rgba(239,159,39,.15);border:1px solid rgba(239,159,39,.3);color:#EF9F27;padding:3px 12px;border-radius:20px;font-size:11px;font-weight:600}
+.wrap{max-width:1100px;margin:0 auto;padding:40px}
+h1{font-family:'Plus Jakarta Sans',sans-serif;font-size:24px;font-weight:800;margin-bottom:4px}
+.sub{font-size:14px;color:var(--gray);margin-bottom:32px}
+.stats-row{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:32px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px;text-align:center}
+.stat-val{font-family:'Plus Jakarta Sans',sans-serif;font-size:28px;font-weight:800;margin-bottom:4px}
+.stat-lbl{font-size:11px;color:var(--gray)}
+.toolbar{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;align-items:center}
+.search{flex:1;min-width:200px;background:rgba(255,255,255,.04);border:1px solid var(--border-mid);border-radius:8px;padding:9px 14px;color:var(--white);font-size:13px;font-family:'Inter',sans-serif;outline:none}
+.search:focus{border-color:rgba(45,125,232,.5)}
+.btn{padding:9px 18px;border-radius:8px;border:1px solid var(--border-mid);background:transparent;color:var(--gray-light);font-size:13px;cursor:pointer;font-family:'Inter',sans-serif;transition:all .2s}
+.btn:hover{border-color:rgba(255,255,255,.25);color:var(--white)}
+.btn-danger{border-color:rgba(226,81,74,.3);color:#f0857f}
+.btn-danger:hover{background:rgba(226,81,74,.08)}
+.table-wrap{background:var(--card);border:1px solid var(--border);border-radius:16px;overflow:hidden}
+table{width:100%;border-collapse:collapse}
+th{padding:12px 16px;text-align:left;font-size:11px;font-weight:600;color:var(--gray);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02)}
+td{padding:14px 16px;font-size:13px;border-bottom:1px solid var(--border);vertical-align:top}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,.02)}
+.name-cell{font-weight:600;color:var(--white);margin-bottom:2px}
+.pos-cell{font-size:11px;color:var(--gray)}
+.score-pill{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.score-hi{background:rgba(30,201,126,.15);color:#1ec97e}
+.score-mid{background:rgba(45,125,232,.15);color:#5b9ef5}
+.score-lo{background:rgba(226,81,74,.12);color:#f0857f}
+.rec-pill{display:inline-block;padding:4px 12px;border-radius:8px;font-size:11px;font-weight:600}
+.detail-btn{background:transparent;border:1px solid var(--border);color:var(--gray);padding:5px 12px;border-radius:6px;cursor:pointer;font-size:12px;transition:all .2s}
+.detail-btn:hover{border-color:var(--blue-light);color:var(--blue-light)}
+.empty{text-align:center;padding:60px 24px;color:var(--gray)}
+.empty-icon{font-size:40px;margin-bottom:12px}
+
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex}
+.modal{background:var(--dark);border:1px solid var(--border-mid);border-radius:20px;max-width:720px;width:100%;max-height:90vh;overflow-y:auto;padding:32px}
+.modal-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px}
+.modal-close{background:transparent;border:1px solid var(--border);color:var(--gray);width:32px;height:32px;border-radius:8px;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.modal-close:hover{border-color:rgba(255,255,255,.25);color:var(--white)}
+.info-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+.info-item{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:10px 14px}
+.info-lbl{font-size:10px;color:var(--gray);letter-spacing:.5px;margin-bottom:3px}
+.info-val{font-size:13px;font-weight:500}
+.info-val.green{background:linear-gradient(135deg,#1ec97e,#5b9ef5);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;font-weight:700}
+.section-title{font-size:11px;font-weight:700;color:var(--gray);letter-spacing:1px;text-transform:uppercase;margin:20px 0 10px}
+.trait{margin-bottom:10px}
+.trait-row{display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px}
+.trait-row strong{color:var(--white)}
+.bar{height:6px;background:rgba(255,255,255,.07);border-radius:3px}
+.bar-fill{height:100%;border-radius:3px}
+.mtabs{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap}
+.mtab{padding:6px 14px;border:1px solid var(--border);border-radius:8px;cursor:pointer;font-size:12px;color:var(--gray);background:transparent;transition:all .2s}
+.mtab.active{background:rgba(45,125,232,.15);border-color:rgba(45,125,232,.4);color:var(--blue-light)}
+.mtab-content{display:none}.mtab-content.active{display:block}
+.alasan-box{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;padding:12px;font-size:13px;color:var(--gray-light);line-height:1.7;margin-top:8px}
+.mbti-big{text-align:center;padding:20px;background:rgba(127,119,221,.08);border:1px solid rgba(127,119,221,.2);border-radius:10px;margin-bottom:12px}
+.mbti-type{font-family:'Plus Jakarta Sans',sans-serif;font-size:36px;font-weight:800;letter-spacing:4px;color:#a5a0f0}
+.rec-box{padding:16px;border-radius:10px;text-align:center;margin-bottom:12px}
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-left">
+    <span class="nav-title">KIM Careers</span>
+    <span class="badge-hr">HR Dashboard</span>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button class="btn" onclick="exportCSV()">Export CSV</button>
+    <button class="btn btn-danger" onclick="clearAll()">Hapus Semua Data</button>
+  </div>
+</nav>
+
+<div class="wrap">
+  <h1>Dashboard Hasil Assessment</h1>
+  <p class="sub" id="last-update">Memuat data...</p>
+
+  <div class="stats-row" id="stats-row">
+    <div class="stat"><div class="stat-val" id="s-total">0</div><div class="stat-lbl">Total Kandidat</div></div>
+    <div class="stat"><div class="stat-val" id="s-rec" style="color:#1ec97e">0</div><div class="stat-lbl">Direkomendasikan</div></div>
+    <div class="stat"><div class="stat-val" id="s-avg" style="color:#5b9ef5">-</div><div class="stat-lbl">Rata-rata Kognitif</div></div>
+    <div class="stat"><div class="stat-val" id="s-today">0</div><div class="stat-lbl">Hari Ini</div></div>
+  </div>
+
+  <div class="toolbar">
+    <input type="text" class="search" id="search-input" placeholder="Cari nama, posisi, perusahaan..." oninput="renderTable()">
+    <select class="search" style="flex:0;width:auto" id="filter-rec" onchange="renderTable()">
+      <option value="">Semua Rekomendasi</option>
+      <option value="Sangat Direkomendasikan">Sangat Direkomendasikan</option>
+      <option value="Direkomendasikan">Direkomendasikan</option>
+      <option value="Perlu Pertimbangan">Perlu Pertimbangan</option>
+      <option value="Tidak Direkomendasikan">Tidak Direkomendasikan</option>
+    </select>
+  </div>
+
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Kandidat</th>
+          <th>Tanggal</th>
+          <th>Kognitif</th>
+          <th>EQ</th>
+          <th>DISC</th>
+          <th>MBTI</th>
+          <th>Rekomendasi</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="tbl-body"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- MODAL DETAIL -->
+<div class="modal-overlay" id="modal">
+  <div class="modal" id="modal-content"></div>
+</div>
+
+<script>
+var allData = [];
+
+function loadData() {
+  try {
+    allData = JSON.parse(localStorage.getItem('kim_assessment_data') || '[]');
+  } catch(e) { allData = []; }
+  renderStats();
+  renderTable();
+  var now = new Date();
+  document.getElementById('last-update').textContent = 'Terakhir diperbarui: ' + now.toLocaleString('id-ID');
+}
+
+function calcFit(scores) {
+  var cogTests = ['army','logika','numerik'].filter(function(k){return scores[k];});
+  var avgCog = cogTests.length ? Math.round(cogTests.reduce(function(s,k){return s+scores[k].pct;},0)/cogTests.length) : 50;
+  var eqS = scores.eq ? scores.eq.total : 50;
+  return Math.round(avgCog*0.5 + eqS*0.5);
+}
+
+function getRecLabel(fit) {
+  return fit>=75?'Sangat Direkomendasikan':fit>=60?'Direkomendasikan':fit>=45?'Perlu Pertimbangan':'Tidak Direkomendasikan';
+}
+function getRecColor(fit) {
+  return fit>=75?'#1ec97e':fit>=60?'#5b9ef5':fit>=45?'#EF9F27':'#f0857f';
+}
+function getRecBg(fit) {
+  return fit>=75?'rgba(30,201,126,.1)':fit>=60?'rgba(45,125,232,.1)':fit>=45?'rgba(239,159,39,.1)':'rgba(226,81,74,.1)';
+}
+function scoreClass(p) {
+  return p>=70?'score-hi':p>=50?'score-mid':'score-lo';
+}
+
+function renderStats() {
+  var total = allData.length;
+  var today = new Date().toLocaleDateString('id-ID',{day:'2-digit',month:'long',year:'numeric'});
+  var todayCount = allData.filter(function(d){return d.tanggal===today;}).length;
+  var recCount = allData.filter(function(d){return calcFit(d.scores)>=60;}).length;
+  var avgArr = allData.filter(function(d){return d.avgCog!==null;}).map(function(d){return d.avgCog;});
+  var avgCog = avgArr.length ? Math.round(avgArr.reduce(function(a,b){return a+b;},0)/avgArr.length) : null;
+
+  document.getElementById('s-total').textContent = total;
+  document.getElementById('s-rec').textContent = recCount;
+  document.getElementById('s-avg').textContent = avgCog!==null ? avgCog+'%' : '-';
+  document.getElementById('s-today').textContent = todayCount;
+}
+
+function renderTable() {
+  var q = document.getElementById('search-input').value.toLowerCase();
+  var filterRec = document.getElementById('filter-rec').value;
+
+  var filtered = allData.filter(function(d) {
+    var match = !q || (d.resp.name+d.resp.posisi+(d.resp.perusahaan||'')).toLowerCase().indexOf(q) >= 0;
+    var fit = calcFit(d.scores);
+    var rec = getRecLabel(fit);
+    var matchRec = !filterRec || rec === filterRec;
+    return match && matchRec;
+  });
+
+  // Sort newest first
+  filtered.sort(function(a,b){return b.id-a.id;});
+
+  var tbody = document.getElementById('tbl-body');
+  if(!filtered.length) {
+    tbody.innerHTML = '<tr><td colspan="8"><div class="empty"><div class="empty-icon">📋</div><div>Belum ada data assessment</div></div></td></tr>';
+    return;
+  }
+
+  tbody.innerHTML = filtered.map(function(d, idx) {
+    var fit = calcFit(d.scores);
+    var rec = getRecLabel(fit);
+    var rc = getRecColor(fit);
+    var rb = getRecBg(fit);
+    var cog = d.avgCog !== null ? d.avgCog : '-';
+    var eq = d.scores.eq ? d.scores.eq.total : '-';
+    var disc = d.scores.disc ? d.scores.disc.dominant : '-';
+    var mbti = d.scores.mbti ? d.scores.mbti.type : '-';
+
+    return '<tr>' +
+      '<td><div class="name-cell">'+d.resp.name+'</div><div class="pos-cell">'+d.resp.posisi+(d.resp.perusahaan&&d.resp.perusahaan!=='-'?' — '+d.resp.perusahaan:'')+'</div></td>' +
+      '<td style="color:var(--gray);white-space:nowrap">'+d.tanggal+'<br><span style="font-size:11px">'+d.waktu+'</span></td>' +
+      '<td>'+(cog!=='-'?'<span class="score-pill '+scoreClass(cog)+'">'+cog+'%</span>':'-')+'</td>' +
+      '<td>'+(eq!=='-'?'<span class="score-pill '+scoreClass(eq)+'">'+eq+'</span>':'-')+'</td>' +
+      '<td><strong style="color:#5b9ef5">'+disc+'</strong></td>' +
+      '<td><strong style="color:#a5a0f0">'+mbti+'</strong></td>' +
+      '<td><span class="rec-pill" style="background:'+rb+';color:'+rc+'">'+rec+'</span></td>' +
+      '<td><button class="detail-btn" onclick="showDetail('+d.id+')">Detail</button></td>' +
+    '</tr>';
+  }).join('');
+}
+
+function showDetail(id) {
+  var d = allData.find(function(x){return x.id===id;});
+  if(!d) return;
+  var scores = d.scores;
+  var fit = calcFit(scores);
+  var rc = getRecColor(fit);
+  var rb = getRecBg(fit);
+  var cogTests = ['army','logika','numerik'].filter(function(k){return scores[k];});
+  var initials = d.resp.name.split(' ').map(function(w){return w[0];}).slice(0,2).join('').toUpperCase();
+
+  var h = '';
+  // Header
+  h += '<div class="modal-header">';
+  h += '<div style="display:flex;align-items:center;gap:14px">';
+  h += '<div style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,rgba(30,201,126,.2),rgba(45,125,232,.2));border:1px solid rgba(45,125,232,.3);display:flex;align-items:center;justify-content:center;font-family:Plus Jakarta Sans,sans-serif;font-size:15px;font-weight:700;color:#5b9ef5;flex-shrink:0">'+initials+'</div>';
+  h += '<div><div style="font-family:Plus Jakarta Sans,sans-serif;font-size:18px;font-weight:700">'+d.resp.name+'</div>';
+  h += '<div style="font-size:13px;color:var(--gray)">'+d.resp.posisi+(d.resp.perusahaan&&d.resp.perusahaan!=='-'?' — '+d.resp.perusahaan:'')+'</div></div></div>';
+  h += '<button class="modal-close" onclick="closeModal()">✕</button></div>';
+
+  // Info grid
+  h += '<div class="info-grid">';
+  h += '<div class="info-item"><div class="info-lbl">NO. HP</div><div class="info-val">'+d.resp.hp+'</div></div>';
+  h += '<div class="info-item"><div class="info-lbl">EMAIL</div><div class="info-val">'+d.resp.email+'</div></div>';
+  h += '<div class="info-item" style="grid-column:1/-1"><div class="info-lbl">ALAMAT</div><div class="info-val">'+d.resp.alamat+'</div></div>';
+  h += '<div class="info-item"><div class="info-lbl">EKSPEKTASI GAJI</div><div class="info-val green">'+d.resp.gaji+'</div></div>';
+  h += '<div class="info-item"><div class="info-lbl">TANGGAL TES</div><div class="info-val">'+d.tanggal+', '+d.waktu+'</div></div>';
+  h += '</div>';
+
+  if(d.resp.alasan) {
+    h += '<div class="info-lbl">ALASAN MELAMAR</div><div class="alasan-box">'+d.resp.alasan+'</div>';
+  }
+
+  // Rekomendasi summary
+  h += '<div style="margin-top:20px;padding:16px;background:'+rb+';border:1px solid '+rc+'44;border-radius:10px;text-align:center">';
+  h += '<div style="font-family:Plus Jakarta Sans,sans-serif;font-size:17px;font-weight:700;color:'+rc+'">'+getRecLabel(fit)+'</div>';
+  h += '<div style="font-size:12px;color:'+rc+';margin-top:2px">Indeks kesesuaian: '+fit+'/100</div></div>';
+
+  // Tabs
+  h += '<div class="mtabs" style="margin-top:20px">';
+  if(cogTests.length) h += '<button class="mtab active" onclick="mTab(this,\'mc\')">Kognitif</button>';
+  if(scores.disc) h += '<button class="mtab'+(cogTests.length?'':' active')+'" onclick="mTab(this,\'md\')">DISC</button>';
+  if(scores.bigfive) h += '<button class="mtab" onclick="mTab(this,\'mbf\')">Big Five</button>';
+  if(scores.mbti) h += '<button class="mtab" onclick="mTab(this,\'mm\')">MBTI</button>';
+  if(scores.eq) h += '<button class="mtab" onclick="mTab(this,\'me\')">EQ</button>';
+  h += '</div>';
+
+  // Cog
+  if(cogTests.length) {
+    var firstShow = cogTests.length ? 'active' : '';
+    h += '<div id="mc" class="mtab-content '+firstShow+'">';
+    var cogInfo = {army:{n:'Army Alpha',c:'#5b9ef5'},logika:{n:'Logika & Penalaran',c:'#1ec97e'},numerik:{n:'Numerik & Deret',c:'#EF9F27'}};
+    cogTests.forEach(function(k){
+      var s=scores[k]; var lc=s.pct>=70?'#1ec97e':s.pct>=50?'#5b9ef5':'#f0857f';
+      var lvl=s.pct>=80?'Tinggi':s.pct>=60?'Cukup':s.pct>=40?'Sedang':'Rendah';
+      h+='<div class="trait"><div class="trait-row"><strong>'+cogInfo[k].n+'</strong><span style="color:'+lc+'">'+lvl+' — '+s.correct+'/'+s.total+' ('+s.pct+'%)</span></div><div class="bar"><div class="bar-fill" style="width:'+s.pct+'%;background:'+cogInfo[k].c+'"></div></div></div>';
+    });
+    h += '</div>';
+  }
+
+  // DISC
+  if(scores.disc) {
+    var ds=scores.disc; var dShow=cogTests.length?'':'active';
+    var dclr={D:'#5b9ef5',I:'#1ec97e',S:'#a5a0f0',C:'#EF9F27'};
+    var dname={D:'Dominance',I:'Influence',S:'Steadiness',C:'Compliance'};
+    h+='<div id="md" class="mtab-content '+dShow+'">';
+    ['D','I','S','C'].forEach(function(k){h+='<div class="trait"><div class="trait-row"><strong>'+dname[k]+' ('+k+')</strong><span style="color:'+dclr[k];h+='">'+ds.scores[k]+'%</span></div><div class="bar"><div class="bar-fill" style="width:'+ds.scores[k]+'%;background:'+dclr[k]+'"></div></div></div>';});
+    h += '<div style="margin-top:10px;padding:10px;background:rgba(255,255,255,.03);border-radius:8px;font-size:13px;color:var(--gray)">Tipe dominan: <strong style="color:#5b9ef5">'+ds.dominant+' — '+({D:'Dominance',I:'Influence',S:'Steadiness',C:'Compliance'})[ds.dominant]+'</strong></div>';
+    h += '</div>';
+  }
+
+  // Big Five
+  if(scores.bigfive) {
+    var bfs=scores.bigfive;
+    var bfi={O:{n:'Openness',c:'#a5a0f0'},C:{n:'Conscientiousness',c:'#1ec97e'},E:{n:'Extraversion',c:'#5b9ef5'},A:{n:'Agreeableness',c:'#EF9F27'},N:{n:'Neuroticism',c:'#f0857f'}};
+    h+='<div id="mbf" class="mtab-content">';
+    ['O','C','E','A','N'].forEach(function(k){
+      var lv=bfs[k]>=70?'Tinggi':bfs[k]>=40?'Sedang':'Rendah';
+      h+='<div class="trait"><div class="trait-row"><strong>'+bfi[k].n+'</strong><span style="color:'+bfi[k].c+'">'+lv+' ('+bfs[k]+'%)</span></div><div class="bar"><div class="bar-fill" style="width:'+bfs[k]+'%;background:'+bfi[k].c+'"></div></div></div>';
+    });
+    h+='</div>';
+  }
+
+  // MBTI
+  if(scores.mbti) {
+    var ms=scores.mbti;
+    var mtypes={ESTJ:'Eksekutif',ISTJ:'Logistik',ENTJ:'Komandan',INTJ:'Arsitek',ESFJ:'Konsul',ISFJ:'Pembela',ENFJ:'Protagonis',INFJ:'Advokat',ESTP:'Pengusaha',ISTP:'Virtuoso',ENTP:'Pemerdebat',INTP:'Pemikir',ESFP:'Penghibur',ISFP:'Petualang',ENFP:'Aktivis',INFP:'Mediator'};
+    h+='<div id="mm" class="mtab-content"><div class="mbti-big"><div class="mbti-type">'+ms.type+'</div><div style="font-size:14px;font-weight:600;color:var(--white);margin-top:4px">'+(mtypes[ms.type]||'Unik')+'</div></div></div>';
+  }
+
+  // EQ
+  if(scores.eq) {
+    var eqs=scores.eq;
+    var eqd={SA:{n:'Kesadaran Diri',c:'#f0857f'},SR:{n:'Regulasi Diri',c:'#EF9F27'},EM:{n:'Empati',c:'#1ec97e'},MT:{n:'Motivasi Diri',c:'#5b9ef5'},RS:{n:'Keterampilan Sosial',c:'#a5a0f0'}};
+    var eqc=eqs.total>=75?'#1ec97e':eqs.total>=50?'#5b9ef5':'#f0857f';
+    h+='<div id="me" class="mtab-content"><div style="text-align:center;padding:12px;background:rgba(255,255,255,.03);border-radius:8px;margin-bottom:12px"><span style="font-family:Plus Jakarta Sans,sans-serif;font-size:28px;font-weight:800;color:'+eqc+'">'+eqs.total+'</span> <span style="font-size:13px;color:var(--gray)">/ 100 — Skor EQ</span></div>';
+    ['SA','SR','EM','MT','RS'].forEach(function(k){h+='<div class="trait"><div class="trait-row"><strong>'+eqd[k].n+'</strong><span style="color:'+eqd[k].c+'">'+eqs[k]+'%</span></div><div class="bar"><div class="bar-fill" style="width:'+eqs[k]+'%;background:'+eqd[k].c+'"></div></div></div>';});
+    h+='</div>';
+  }
+
+  document.getElementById('modal-content').innerHTML = h;
+  document.getElementById('modal').classList.add('open');
+
+  // Activate first tab
+  var firstTab = document.querySelector('.mtab.active');
+  if(firstTab) {
+    var id2 = firstTab.getAttribute('onclick').match(/'([^']+)'/)[1];
+    var el = document.getElementById(id2);
+    if(el) el.style.display='block';
+    document.querySelectorAll('.mtab-content:not(.active)').forEach(function(t){t.style.display='none';});
+  }
+}
+
+function mTab(btn,id) {
+  document.querySelectorAll('.mtab').forEach(function(b){b.classList.remove('active');});
+  document.querySelectorAll('.mtab-content').forEach(function(t){t.style.display='none';});
+  btn.classList.add('active');
+  document.getElementById(id).style.display='block';
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+}
+document.getElementById('modal').addEventListener('click', function(e){
+  if(e.target===this) closeModal();
+});
+
+function clearAll() {
+  if(confirm('Hapus semua data assessment? Tindakan ini tidak bisa dibatalkan.')) {
+    localStorage.removeItem('kim_assessment_data');
+    allData = [];
+    renderStats();
+    renderTable();
+  }
+}
+
+function exportCSV() {
+  if(!allData.length){alert('Tidak ada data untuk diexport.');return;}
+  var rows = [['Nama','HP','Email','Alamat','Posisi','Perusahaan','Gaji','Alasan','Tanggal','Army Alpha','Logika','Numerik','Avg Kognitif','EQ','DISC','MBTI','Rekomendasi']];
+  allData.forEach(function(d){
+    var fit=calcFit(d.scores);
+    rows.push([
+      d.resp.name, d.resp.hp, d.resp.email, d.resp.alamat, d.resp.posisi,
+      d.resp.perusahaan||'-', d.resp.gaji, '"'+d.resp.alasan+'"', d.tanggal+' '+d.waktu,
+      d.scores.army?d.scores.army.pct+'%':'-',
+      d.scores.logika?d.scores.logika.pct+'%':'-',
+      d.scores.numerik?d.scores.numerik.pct+'%':'-',
+      d.avgCog!==null?d.avgCog+'%':'-',
+      d.scores.eq?d.scores.eq.total:'-',
+      d.scores.disc?d.scores.disc.dominant:'-',
+      d.scores.mbti?d.scores.mbti.type:'-',
+      getRecLabel(fit)
+    ]);
+  });
+  var csv = rows.map(function(r){return r.join(',');}).join('\n');
+  var blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href=url; a.download='assessment-results.csv'; a.click();
+}
+
+// Auto refresh every 30 seconds
+loadData();
+setInterval(loadData, 30000);
+</script>
+</body>
+</html>
