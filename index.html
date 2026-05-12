@@ -25,8 +25,8 @@
   .nav-right{display:flex;gap:12px;align-items:center;}
   .nav-cta{background:var(--blue);color:#fff;padding:10px 24px;border-radius:8px;text-decoration:none;font-size:14px;font-weight:500;transition:all .2s;}
   .nav-cta:hover{background:var(--blue-light);}
-  .nav-admin-btn{background:transparent;border:1px solid rgba(255,255,255,0.15);color:var(--gray);padding:9px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;}
-  .nav-admin-btn:hover,.nav-admin-btn.active{border-color:var(--blue);color:var(--blue-light);background:rgba(45,125,232,0.1);}
+  .nav-admin-btn{display:none;background:transparent;border:1px solid rgba(45,125,232,0.3);color:var(--blue-light);padding:9px 16px;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;font-family:'Inter',sans-serif;background:rgba(45,125,232,0.1);}
+  .nav-admin-btn.visible{display:block;}
   .hero{min-height:100vh;display:flex;align-items:center;padding:120px 60px 80px;position:relative;overflow:hidden;}
   .hero-bg{position:absolute;inset:0;z-index:0;background:radial-gradient(ellipse 60% 50% at 70% 40%,rgba(45,125,232,0.12) 0%,transparent 70%),radial-gradient(ellipse 40% 40% at 20% 70%,rgba(30,201,126,0.08) 0%,transparent 60%);}
   .hero-grid{position:absolute;inset:0;z-index:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:60px 60px;mask-image:radial-gradient(ellipse 80% 80% at 50% 50%,black,transparent);}
@@ -980,14 +980,14 @@ function closeLogin(){document.getElementById('loginModal').classList.remove('op
 function doLogin(){
   if(document.getElementById('pwInput').value===getPw()){
     setLogin(true);closeLogin();openAdmin();
-    document.getElementById('adminBtn').classList.add('active');
+    document.getElementById('adminBtn').classList.add('visible','active');
     document.getElementById('adminModeBar').classList.add('show');
   } else {
     document.getElementById('loginError').style.display='block';
     document.getElementById('pwInput').value='';
   }
 }
-function logout(){setLogin(false);closeAdmin();document.getElementById('adminBtn').classList.remove('active');document.getElementById('adminModeBar').classList.remove('show');showNotif('Berhasil keluar dari Admin Panel.');}
+function logout(){setLogin(false);closeAdmin();document.getElementById('adminBtn').classList.remove('visible','active');document.getElementById('adminModeBar').classList.remove('show');showNotif('Berhasil keluar dari Admin Panel.');}
 function openAdmin(){renderAdminLoker();renderAdminFoto();loadKontenForm();const su=getScriptUrl();if(su)document.getElementById('appsScriptUrl').value=su;document.getElementById('adminDrawer').classList.add('open');document.getElementById('drawerBackdrop').classList.add('open');}
 function closeAdmin(){document.getElementById('adminDrawer').classList.remove('open');document.getElementById('drawerBackdrop').classList.remove('open');}
 function changePassword(){
@@ -1017,7 +1017,20 @@ function showNotif(msg,isError=false){
 // ═══ INIT ═══
 document.addEventListener('DOMContentLoaded',()=>{
   loadAll();
-  if(isLoggedIn()){document.getElementById('adminBtn').classList.add('active');document.getElementById('adminModeBar').classList.add('show');}
+  if(isLoggedIn()){document.getElementById('adminBtn').classList.add('visible','active');document.getElementById('adminModeBar').classList.add('show');}
+
+  // Tombol Admin tersembunyi — muncul hanya dengan Ctrl+Shift+A
+  let _keys={};
+  document.addEventListener('keydown',e=>{
+    _keys[e.key]=true;
+    if(_keys['Control']&&_keys['Shift']&&_keys['A']){
+      const btn=document.getElementById('adminBtn');
+      btn.classList.toggle('visible');
+      if(btn.classList.contains('visible')&&!isLoggedIn()) openLogin();
+    }
+  });
+  document.addEventListener('keyup',e=>{delete _keys[e.key];});
+
   const obs=new IntersectionObserver(entries=>entries.forEach((e,i)=>{if(e.isIntersecting)setTimeout(()=>e.target.classList.add('visible'),i*80);}),{threshold:.1});
   document.querySelectorAll('.fade-up').forEach(el=>obs.observe(el));
   document.getElementById('editModal').addEventListener('click',function(e){if(e.target===this)closeEdit();});
