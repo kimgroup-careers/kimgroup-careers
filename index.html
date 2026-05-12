@@ -1028,8 +1028,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   // Tombol Admin tersembunyi — muncul hanya dengan Ctrl+Shift+A
   let _keys={};
   document.addEventListener('keydown',e=>{
+    const tag=document.activeElement.tagName.toLowerCase();
+    const isTyping=tag==='input'||tag==='textarea'||document.activeElement.isContentEditable;
     _keys[e.key]=true;
-    if(_keys['Control']&&_keys['Shift']&&_keys['A']){
+    if(!isTyping&&_keys['Control']&&_keys['Shift']&&_keys['A']){
       const btn=document.getElementById('adminBtn');
       btn.classList.toggle('visible');
       if(btn.classList.contains('visible')&&!isLoggedIn()) openLogin();
