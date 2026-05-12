@@ -218,7 +218,7 @@
   <a href="#beranda" class="nav-logo">KIM GROUP</a>
   <ul class="nav-links">
     <li><a href="#tentang">Tentang</a></li>
-    <li><a href="#foto">Galeri</a></li>
+    <li id="navGaleri" style="display:none;"><a href="#foto">Galeri</a></li>
     <li><a href="#bisnis">Bisnis</a></li>
     <li><a href="#budaya">Budaya</a></li>
     <li><a href="#karir">Karir</a></li>
@@ -272,12 +272,12 @@
   </div>
 </section>
 
-<!-- GALERI FOTO -->
-<section class="foto-section" id="foto">
+<!-- GALERI FOTO (tersembunyi sampai ada foto) -->
+<section class="foto-section" id="foto" style="display:none;">
   <div class="fade-up">
     <div class="section-tag">Galeri</div>
     <h2 class="section-title">Lingkungan & <span class="kim-gradient">Tim</span> Kami</h2>
-    <p class="section-sub">Sekilas suasana kerja dan kegiatan di KIM Group.</p>
+    
   </div>
   <div class="foto-grid fade-up" id="fotoGrid">
     <div class="skeleton" style="height:200px;border-radius:14px;"></div>
@@ -765,11 +765,17 @@ function renderLoker() {
 // ═══ RENDER FOTO (publik) ═══
 function renderFoto() {
   const grid=document.getElementById('fotoGrid');
+  const section=document.getElementById('foto');
   if(!grid) return;
   if(!cacheFoto.length){
-    grid.innerHTML='<div style="grid-column:1/-1;text-align:center;padding:48px;color:var(--gray);font-size:14px;border:1px dashed var(--border);border-radius:14px;">Belum ada foto. Tambahkan melalui Admin Panel.</div>';
+    if(section) section.style.display='none';
+    const navG2=document.getElementById('navGaleri');
+    if(navG2) navG2.style.display='none';
     return;
   }
+  if(section) section.style.display='';
+  const navG=document.getElementById('navGaleri');
+  if(navG) navG.style.display='';
   grid.innerHTML=cacheFoto.map(f=>{
     const src=toDirectUrl(f.url);
     return `<div class="foto-card"><img src="${esc(src)}" alt="${esc(f.caption)}" loading="lazy" onerror="this.parentElement.style.display='none'"><div class="foto-caption">${esc(f.caption)}</div></div>`;
