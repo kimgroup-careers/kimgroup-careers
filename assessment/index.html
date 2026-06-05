@@ -189,7 +189,7 @@ footer p{font-size:12px;color:var(--gray)}
           </select>
         </div>
         <div class="field gfull"><label>Alasan Melamar <span class="req">*</span></label><textarea id="falasan" rows="4" placeholder="Ceritakan mengapa Anda tertarik dengan posisi ini..." oninput="upChar(this,'ac',500)"></textarea><div class="char-count" id="ac">0 / 500 karakter</div></div>
-        <div class="field gfull"><label>Ekspektasi Gaji (per bulan)</label><div class="salary-val" id="sal-disp">Rp 5.000.000</div><input type="range" id="fgaji" min="2" max="50" value="5" step="1" oninput="upSal(this.value)"><div class="salary-track"><span>Rp 2 jt</span><span>Rp 10 jt</span><span>Rp 25 jt</span><span>Rp 50 jt+</span></div></div>
+        <div class="field gfull"><label>Ekspektasi Gaji (per bulan)</label><div class="salary-val" id="sal-disp">Rp 3.500.000</div><input type="range" id="fgaji" min="4" max="100" value="7" step="1" oninput="upSal(this.value)"><div class="salary-track"><span>Rp 2 jt</span><span>Rp 10 jt</span><span>Rp 25 jt</span><span>Rp 50 jt+</span></div></div>
       </div>
     </div>
         <div class="err-box" id="err"></div>
@@ -464,8 +464,25 @@ function upChar(el,id,max) {
   if(el.value.length>max) el.value=el.value.substring(0,max);
 }
 function upSal(v) {
-  var n=parseInt(v);
-  document.getElementById('sal-disp').textContent=n>=50?'Rp 50.000.000+':'Rp '+n.toLocaleString('id-ID')+'.000.000';
+  var n = parseInt(v);
+  // n = number of 500k units, min 4 (=2jt), max 100 (=50jt)
+  var total = n * 500000;
+  if(total >= 50000000) {
+    document.getElementById('sal-disp').textContent = 'Rp 50.000.000+';
+  } else {
+    // Format with dots
+    var jt = Math.floor(total / 1000000);
+    var ratus = (total % 1000000) / 100000;
+    var display = '';
+    if(ratus > 0) {
+      display = 'Rp ' + jt + '.' + (ratus * 100 < 1000 ? '0' : '') + (ratus * 100).toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + '0';
+      // Simpler: just show like 3.500.000
+      display = 'Rp ' + total.toLocaleString('id-ID');
+    } else {
+      display = 'Rp ' + total.toLocaleString('id-ID');
+    }
+    document.getElementById('sal-disp').textContent = display;
+  }
 }
 function togT(el) {
   el.classList.toggle('sel');
@@ -489,7 +506,7 @@ function startAll() {
   if(!alasan){err.style.display='block';err.textContent='Alasan melamar wajib diisi.';return;}
   err.style.display='none';
   var gv=parseInt(document.getElementById('fgaji').value);
-  resp={name:name,hp:hp,email:email,alamat:alamat,posisi:posisi,dept:document.getElementById('fd').value,perusahaan:(window._autoPerusahaan||document.getElementById('fd').value||'-'),alasan:alasan,gaji:gv>=50?'Rp 50.000.000+':'Rp '+gv.toLocaleString('id-ID')+'.000.000'};
+  resp={name:name,hp:hp,email:email,alamat:alamat,posisi:posisi,dept:document.getElementById('fd').value,perusahaan:(window._autoPerusahaan||document.getElementById('fd').value||'-'),alasan:alasan,gaji:(function(){var t=gv*500000;return t>=50000000?'Rp 50.000.000+':'Rp '+t.toLocaleString('id-ID');})()};
   tIdx=0; qIdx=0; aData={};
   sel.forEach(function(k){aData[k]={};});
   document.getElementById('step-home').style.display='none';
@@ -1042,7 +1059,7 @@ function showResults(){
     avgCog: avgCog
   };
   try {
-    fetch('https://script.google.com/macros/s/AKfycbzNN1ZkahsFmTURmxrvVX9pvmeIQ5nHnnzb-jZZYm4dt1KLU_f8I_FcYEKvJQ6fo4rGuw/exec', {
+    fetch('https://script.google.com/macros/s/AKfycbzjxSvza2ainSSHu1GFyvgVzF6yNebqlK_w1rSvL9h-kPH40yAGgWnC8nwg13ODcHfb-w/exec', {
       method: 'POST',
       mode: 'no-cors',
       headers: {'Content-Type': 'application/json'},
