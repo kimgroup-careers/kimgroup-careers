@@ -1061,9 +1061,9 @@ function showResults(){
   try {
     var encoded = encodeURIComponent(JSON.stringify(record));
     var img = new Image();
-    img.src = 'https://script.google.com/macros/s/AKfycbz9ami954qr-PTfLRfguCZqq8AX4tPIFOgw1p7pr38LX3_YzzxN0S1--eMCu1fS2jhQDQ/exec?data=' + encoded;
+    img.src = 'https://script.google.com/macros/s/AKfycbwrNVaoSnHxAUjblyc5P-cfs8waJWTTJjgs4MtCelyU585orivo8-ZJa7wnth3PYEXR6g/exec?data=' + encoded;
     // Also try fetch as backup
-    fetch('https://script.google.com/macros/s/AKfycbz9ami954qr-PTfLRfguCZqq8AX4tPIFOgw1p7pr38LX3_YzzxN0S1--eMCu1fS2jhQDQ/exec?data=' + encoded, {
+    fetch('https://script.google.com/macros/s/AKfycbwrNVaoSnHxAUjblyc5P-cfs8waJWTTJjgs4MtCelyU585orivo8-ZJa7wnth3PYEXR6g/exec?data=' + encoded, {
       method: 'GET',
       mode: 'no-cors'
     }).catch(function(){});
