@@ -1059,13 +1059,14 @@ function showResults(){
     avgCog: avgCog
   };
   try {
-    // Send as text/plain to avoid CORS preflight
-    fetch('https://script.google.com/macros/s/AKfycbxzGfsOIy0jCmqev-74c0MTOmGNDwmhjOZKkzeldGtmSTQUJOq1fiqPNOrbJYPe_dSOlg/exec', {
-      method: 'POST',
-      mode: 'no-cors',
-      headers: {'Content-Type': 'text/plain'},
-      body: JSON.stringify(record)
-    }).catch(function(e){ console.log('fetch error:', e); });
+    var encoded = encodeURIComponent(JSON.stringify(record));
+    var img = new Image();
+    img.src = 'https://script.google.com/macros/s/AKfycbz9ami954qr-PTfLRfguCZqq8AX4tPIFOgw1p7pr38LX3_YzzxN0S1--eMCu1fS2jhQDQ/exec?data=' + encoded;
+    // Also try fetch as backup
+    fetch('https://script.google.com/macros/s/AKfycbz9ami954qr-PTfLRfguCZqq8AX4tPIFOgw1p7pr38LX3_YzzxN0S1--eMCu1fS2jhQDQ/exec?data=' + encoded, {
+      method: 'GET',
+      mode: 'no-cors'
+    }).catch(function(){});
   } catch(e){ console.log('Send error:', e); }
 
   // Show CANDIDATE page - thank you only
