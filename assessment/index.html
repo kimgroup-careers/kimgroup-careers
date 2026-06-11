@@ -1059,15 +1059,21 @@ function showResults(){
     avgCog: avgCog
   };
   try {
-    var encoded = encodeURIComponent(JSON.stringify(record));
-    var img = new Image();
-    img.src = 'https://script.google.com/macros/s/AKfycbwrNVaoSnHxAUjblyc5P-cfs8waJWTTJjgs4MtCelyU585orivo8-ZJa7wnth3PYEXR6g/exec?data=' + encoded;
-    // Also try fetch as backup
-    fetch('https://script.google.com/macros/s/AKfycbwrNVaoSnHxAUjblyc5P-cfs8waJWTTJjgs4MtCelyU585orivo8-ZJa7wnth3PYEXR6g/exec?data=' + encoded, {
-      method: 'GET',
-      mode: 'no-cors'
-    }).catch(function(){});
-  } catch(e){ console.log('Send error:', e); }
+    // Use XMLHttpRequest with no-cors equivalent
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', 'https://script.google.com/macros/s/AKfycbwrNVaoSnHxAUjblyc5P-cfs8waJWTTJjgs4MtCelyU585orivo8-ZJa7wnth3PYEXR6g/exec', true);
+    xhr.setRequestHeader('Content-Type', 'text/plain;charset=UTF-8');
+    xhr.send(JSON.stringify(record));
+  } catch(e){ 
+    // Fallback: try fetch
+    try {
+      fetch('https://script.google.com/macros/s/AKfycbwrNVaoSnHxAUjblyc5P-cfs8waJWTTJjgs4MtCelyU585orivo8-ZJa7wnth3PYEXR6g/exec', {
+        method: 'POST',
+        mode: 'no-cors',
+        body: JSON.stringify(record)
+      });
+    } catch(e2){ console.log('Send error:', e2); }
+  }
 
   // Show CANDIDATE page - thank you only
   document.getElementById('s-assessment').style.display='none';
