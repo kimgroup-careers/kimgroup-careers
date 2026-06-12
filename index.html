@@ -605,7 +605,7 @@ const LOCAL_LOKER_KEY = 'kimgroup_local_loker';
 const LOCAL_FOTO_KEY  = 'kimgroup_local_foto';
 const LOCAL_KONTEN_KEY= 'kimgroup_local_konten';
 
-const getPw      = () => localStorage.getItem(PW_KEY) || 'kimgroup2025';
+localStorage.removeItem('kimgroup_pw'); const getPw = () => localStorage.getItem('kimgroup_pw') || 'kimgroup2025';
 const isLoggedIn = () => sessionStorage.getItem(SESS_KEY) === '1';
 const setLogin   = v  => v ? sessionStorage.setItem(SESS_KEY,'1') : sessionStorage.removeItem(SESS_KEY);
 const getScriptUrl = () => localStorage.getItem(SCRIPT_KEY) || '';
